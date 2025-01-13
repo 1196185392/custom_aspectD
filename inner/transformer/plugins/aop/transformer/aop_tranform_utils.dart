@@ -165,7 +165,7 @@ class AopUtils {
 
   static bool checkIfReplaceThisUsage(Source source, Statement statement) {
     final int lineNum =
-        AopUtils.getLineNumBySourceAndOffset(source, statement.fileOffset);
+    AopUtils.getLineNumBySourceAndOffset(source, statement.fileOffset);
     if (lineNum == -1) {
       return null;
     }
@@ -373,7 +373,7 @@ class AopUtils {
                   instanceConstant.fieldValues;
 
               final List<MapLiteralEntry> annotationParams =
-                  <MapLiteralEntry>[];
+              <MapLiteralEntry>[];
 
               vals.forEach((Reference ref, Constant val) {
                 final ConstantExpression exp = ConstantExpression(val);
@@ -401,8 +401,8 @@ class AopUtils {
 
     final Class pointCutProceedProcedureCls = pointCutProceedProcedure.parent;
     final ConstructorInvocation pointCutConstructorInvocation =
-        ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
-            pointCutConstructorArguments);
+    ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
+        pointCutConstructorArguments);
     redirectArguments.positional.add(pointCutConstructorInvocation);
   }
 
@@ -491,7 +491,7 @@ class AopUtils {
                   instanceConstant.fieldValues;
 
               final List<MapLiteralEntry> annotationParams =
-                  <MapLiteralEntry>[];
+              <MapLiteralEntry>[];
 
               vals.forEach((Reference ref, Constant val) {
                 final ConstantExpression exp = ConstantExpression(val);
@@ -519,8 +519,8 @@ class AopUtils {
 
     final Class pointCutProceedProcedureCls = pointCutProceedProcedure.parent;
     final ConstructorInvocation pointCutConstructorInvocation =
-        ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
-            pointCutConstructorArguments);
+    ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
+        pointCutConstructorArguments);
     redirectArguments.positional.add(pointCutConstructorInvocation);
   }
 
@@ -545,7 +545,7 @@ class AopUtils {
     }
 
     for (VariableDeclaration variableDeclaration
-        in member.function.positionalParameters) {
+    in member.function.positionalParameters) {
       final Arguments getArguments = Arguments.empty();
       getArguments.positional.add(IntLiteral(i));
 
@@ -567,7 +567,7 @@ class AopUtils {
     final List<NamedExpression> namedEntries = <NamedExpression>[];
 
     for (VariableDeclaration variableDeclaration
-        in member.function.namedParameters) {
+    in member.function.namedParameters) {
       final Arguments getArguments = Arguments.empty();
       getArguments.positional.add(StringLiteral(variableDeclaration.name));
 
@@ -709,6 +709,10 @@ class AopUtils {
 
   static Map<String, String> calcSourceInfo(
       Map<Uri, Source> uriToSource, Library library, int fileOffset) {
+    if (library == null || fileOffset < 0) {
+      return null;
+    }
+
     final Map<String, String> sourceInfo = <String, String>{};
     String importUri = library.importUri.toString();
     final int idx = importUri.lastIndexOf('/');
@@ -732,7 +736,7 @@ class AopUtils {
     }
     sourceInfo.putIfAbsent(
         'importUri',
-        () => (library.importUri.toString() != null)
+            () => (library.importUri.toString() != null)
             ? (library.importUri.toString())
             : '');
     sourceInfo.putIfAbsent('library', () => importUri);
@@ -785,7 +789,7 @@ class AopUtils {
         positionalParameters: referConstructor.function.positionalParameters,
         namedParameters: referConstructor.function.namedParameters,
         requiredParameterCount:
-            referConstructor.function.requiredParameterCount,
+        referConstructor.function.requiredParameterCount,
         returnType: shouldReturn
             ? deepCopyASTNode(referConstructor.function.returnType)
             : const VoidType(),
@@ -830,19 +834,18 @@ class AopUtils {
       if (isReturnType || ignoreGenerics) {
         return const DynamicType();
       }
-      return TypeParameterType(
-          deepCopyASTNode(node.parameter),
+      return TypeParameterType(deepCopyASTNode(node.parameter),
           deepCopyASTNode(node.declaredNullability));
     }
     if (node is FunctionType) {
       return FunctionType(
-          deepCopyASTNodes(node.positionalParameters),
-          deepCopyASTNode(node.returnType, isReturnType: true),
-          Nullability.legacy,
-          namedParameters: deepCopyASTNodes(node.namedParameters),
-          typeParameters: deepCopyASTNodes(node.typeParameters),
-          requiredParameterCount: node.requiredParameterCount,
-       );
+        deepCopyASTNodes(node.positionalParameters),
+        deepCopyASTNode(node.returnType, isReturnType: true),
+        Nullability.legacy,
+        namedParameters: deepCopyASTNodes(node.namedParameters),
+        typeParameters: deepCopyASTNodes(node.typeParameters),
+        requiredParameterCount: node.requiredParameterCount,
+      );
     }
     if (node is TypedefType) {
       return TypedefType(node.typedefNode, Nullability.legacy,
@@ -856,7 +859,7 @@ class AopUtils {
     final List<T> newNodes = <T>[];
     for (T node in nodes) {
       final dynamic newNode =
-          deepCopyASTNode(node, ignoreGenerics: ignoreGeneric);
+      deepCopyASTNode(node, ignoreGenerics: ignoreGeneric);
       if (newNode != null) {
         newNodes.add(newNode);
       }
@@ -868,11 +871,11 @@ class AopUtils {
     final List<Expression> positional = <Expression>[];
     final List<NamedExpression> named = <NamedExpression>[];
     for (VariableDeclaration variableDeclaration
-        in functionNode.positionalParameters) {
+    in functionNode.positionalParameters) {
       positional.add(VariableGet(variableDeclaration));
     }
     for (VariableDeclaration variableDeclaration
-        in functionNode.namedParameters) {
+    in functionNode.namedParameters) {
       named.add(NamedExpression(
           variableDeclaration.name, VariableGet(variableDeclaration)));
     }
@@ -937,5 +940,79 @@ class AopUtils {
       }
     }
     return null;
+  }
+
+  static bool _isGenericCollectionType(DartType type) {
+    if (type == null) return false;
+
+    if (type is InterfaceType) {
+      // 添加空值检查
+      if (type.classNode == null ||
+          type.classNode.parent == null ||
+          type.typeArguments == null) {
+        return false;
+      }
+
+      var parentName = type.classNode.name;
+      if (parentName == null) return false;
+
+      // 检查是否为dart:collection中的类型
+      if (parentName == 'dart:collection') {
+        return true;
+      }
+
+      // 检查是否为dart:core中的集合类型
+      if (parentName == 'dart:core') {
+        var name = type.classNode.name;
+        if (name == null) return false;
+        return name == 'List' || name == 'Set' || name == 'Map';
+      }
+    }
+
+    return false;
+  }
+
+  static bool checkHasCollectionGenericParams(Node node) {
+    if (node is Procedure) {
+      if (node.function.typeParameters.isNotEmpty) {
+        return true;
+      }
+      var p = node.parent;
+      if (p != null && p is Class && p.typeParameters.isNotEmpty) {
+        return true;
+      }
+    }
+
+    // if (node == null) return false;
+    //
+    // // 检查方法参数
+    // if (node is Procedure) {
+    //   // 空值检查
+    //   if (node.function == null ||
+    //       node.function.positionalParameters == null ||
+    //       node.function.namedParameters == null) {
+    //     return false;
+    //   }
+    //
+    //   var parameters = [
+    //     ...node.function.positionalParameters,
+    //     ...node.function.namedParameters
+    //   ];
+    //
+    //   for (var parameter in parameters) {
+    //     if (parameter == null || parameter.type == null) continue;
+    //     if (_isGenericCollectionType(parameter.type)) {
+    //       return true;
+    //     }
+    //   }
+    //
+    //   // 检查返回值类型
+    //   if (node.function.returnType != null &&
+    //       _isGenericCollectionType(node.function.returnType)) {
+    //     return true;
+    //   }
+    // }
+
+    return false;
   }
 }

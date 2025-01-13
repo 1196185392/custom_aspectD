@@ -6,16 +6,16 @@ import 'aop_tranform_utils.dart';
 class AopItemInfo {
   AopItemInfo(
       {this.mode,
-      this.importUri,
-      this.clsName,
-      this.methodName,
-      this.isStatic,
-      this.aopMember,
-      this.isRegex,
-      this.superCls,
-      this.lineNum,
-      this.excludeCoreLib = false,
-      this.fieldName});
+        this.importUri,
+        this.clsName,
+        this.methodName,
+        this.isStatic,
+        this.aopMember,
+        this.isRegex,
+        this.superCls,
+        this.lineNum,
+        this.excludeCoreLib = true,
+        this.fieldName});
 
   final AopMode mode;
   final String importUri;

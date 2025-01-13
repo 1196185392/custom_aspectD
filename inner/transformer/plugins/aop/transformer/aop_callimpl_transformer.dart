@@ -18,8 +18,8 @@ class AopCallImplTransformer extends Transformer {
 
   final Map<Uri, Source> _uriToSource;
   final Map<InvocationExpression, InvocationExpression>
-      _invocationExpressionMapping =
-      <InvocationExpression, InvocationExpression>{};
+  _invocationExpressionMapping =
+  <InvocationExpression, InvocationExpression>{};
 
   @override
   Library visitLibrary(Library node) {
@@ -39,7 +39,7 @@ class AopCallImplTransformer extends Transformer {
 
       final Class cls = constructor.parent;
       final String procedureImportUri =
-          (cls.parent as Library).importUri.toString();
+      (cls.parent as Library).importUri.toString();
       String functionName = '${cls.name}';
       if (constructor.name.text.isNotEmpty) {
         functionName += '.${constructor.name.text}';
@@ -49,7 +49,8 @@ class AopCallImplTransformer extends Transformer {
           _aopItemInfoList, procedureImportUri, cls.name, functionName, true);
 
       if (aopItemInfo?.mode == AopMode.Call &&
-          AopUtils.checkIfSkipAOP(aopItemInfo, _curLibrary) == false) {
+          AopUtils.checkIfSkipAOP(aopItemInfo, _curLibrary) == false
+          && !AopUtils.checkHasCollectionGenericParams(node)) {
         return transformConstructorInvocation(
             constructorInvocation, aopItemInfo);
       }
@@ -114,14 +115,15 @@ class AopCallImplTransformer extends Transformer {
         final AopItemInfo aopItemInfo = _filterAopItemInfo(
             _aopItemInfoList, libraryImportUri, '', procedure.name.text, true);
         if (aopItemInfo?.mode == AopMode.Call &&
-            AopUtils.checkIfSkipAOP(aopItemInfo, _curLibrary) == false) {
+            AopUtils.checkIfSkipAOP(aopItemInfo, _curLibrary) == false &&
+            !AopUtils.checkHasCollectionGenericParams(node)) {
           return transformLibraryStaticMethodInvocation(
               staticInvocation, procedure, aopItemInfo);
         }
-      } else if (treeNode is Class) {
+      } else if (treeNode is Class && treeNode.typeParameters.isEmpty) {
         final Class cls = treeNode;
         final String procedureImportUri =
-            (cls.parent as Library).importUri.toString();
+        (cls.parent as Library).importUri.toString();
         final AopItemInfo aopItemInfo = _filterAopItemInfo(_aopItemInfoList,
             procedureImportUri, cls.name, procedure.name.text, true);
         if (aopItemInfo?.mode == AopMode.Call &&
@@ -147,7 +149,18 @@ class AopCallImplTransformer extends Transformer {
     if (node is Procedure || node == null) {
       if (node is Procedure) {
         final Procedure procedure = node;
+        print("111111 Procedure name: ${procedure.name?.text}");
         final Class cls = procedure.parent;
+//         print("1111111 Class: ${cls?.name}");
+//         if(procedure.name.text=="[]"||procedure.name.text=="+"||procedure.name.text=="add"||procedure.name.text=="nextInt"){
+// print("");
+//         }
+//         if (cls == null || cls.parent == null) {
+//           return instanceInvocation;
+//         }
+        // if (cls is Class && cls.typeParameters.isNotEmpty) {
+        //   return instanceInvocation;
+        // }
         importUri = (cls.parent as Library).importUri.toString();
         clsName = cls.name;
         methodName = instanceInvocation.name.text;
@@ -162,7 +175,8 @@ class AopCallImplTransformer extends Transformer {
       final AopItemInfo aopItemInfo = _filterAopItemInfo(
           _aopItemInfoList, importUri, clsName, methodName, false);
       if (aopItemInfo?.mode == AopMode.Call &&
-          AopUtils.checkIfSkipAOP(aopItemInfo, _curLibrary) == false) {
+          AopUtils.checkIfSkipAOP(aopItemInfo, _curLibrary) == false &&
+          !AopUtils.checkHasCollectionGenericParams(node)) {
         return transformInstanceMethodInvocation(
             instanceInvocation, aopItemInfo);
       }
@@ -240,7 +254,7 @@ class AopCallImplTransformer extends Transformer {
         staticInvocation.arguments,
         null);
     final StaticInvocation staticInvocationNew =
-        StaticInvocation(aopItemInfo.aopMember, redirectArguments);
+    StaticInvocation(aopItemInfo.aopMember, redirectArguments);
 
     insertStaticMethod4Pointcut(
         aopItemInfo,
@@ -284,7 +298,7 @@ class AopCallImplTransformer extends Transformer {
         currentClass);
 
     final StaticInvocation staticInvocationNew =
-        StaticInvocation(aopItemInfo.aopMember, redirectArguments);
+    StaticInvocation(aopItemInfo.aopMember, redirectArguments);
 
     insertConstructor4Pointcut(
         aopItemInfo,
@@ -329,7 +343,7 @@ class AopCallImplTransformer extends Transformer {
         currentClass);
 
     final StaticInvocation staticInvocationNew =
-        StaticInvocation(aopItemInfo.aopMember, redirectArguments);
+    StaticInvocation(aopItemInfo.aopMember, redirectArguments);
 
     insertStaticMethod4Pointcut(
         aopItemInfo,
@@ -425,8 +439,8 @@ class AopCallImplTransformer extends Transformer {
 
     final Class cls = aopItemInfo.aopMember.parent;
     final ConstructorInvocation redirectConstructorInvocation =
-        ConstructorInvocation.byReference(
-            cls.constructors.first.reference, Arguments(<Expression>[]));
+    ConstructorInvocation.byReference(
+        cls.constructors.first.reference, Arguments(<Expression>[]));
     final InstanceInvocation methodInvocationNew = InstanceInvocation(
         InstanceAccessKind.Instance,
         redirectConstructorInvocation,
@@ -527,7 +541,7 @@ class AopCallImplTransformer extends Transformer {
         interfaceTarget: originalProcedure,
         functionType: originalInvocation.functionType);
     final bool shouldReturn =
-        !(originalProcedure.function.returnType is VoidType);
+    !(originalProcedure.function.returnType is VoidType);
     createPointcutStubProcedure(
         aopItemInfo,
         stubKey,

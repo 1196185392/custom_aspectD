@@ -10,12 +10,12 @@ import 'aop_tranform_utils.dart';
 class AopStatementsInsertInfo {
   AopStatementsInsertInfo(
       {this.library,
-      this.source,
-      this.constructor,
-      this.procedure,
-      this.node,
-      this.aopItemInfo,
-      this.aopInsertStatements});
+        this.source,
+        this.constructor,
+        this.procedure,
+        this.node,
+        this.aopItemInfo,
+        this.aopInsertStatements});
 
   final Library library;
   final Source source;
@@ -67,8 +67,8 @@ class AopExecuteImplTransformer extends Transformer {
           matches = true;
         } else {
           for (int i = 0;
-              i < mightPatchCls.implementedTypes.length && matches == false;
-              i++) {
+          i < mightPatchCls.implementedTypes.length && matches == false;
+          i++) {
             final Supertype supertype = mightPatchCls.implementedTypes[i];
             if (supertype.className.node == expectedCls &&
                 mightPatchCls.parent == expectedCls.parent &&
@@ -100,7 +100,7 @@ class AopExecuteImplTransformer extends Transformer {
           procedure.function.body != null &&
           procedure.function.typeParameters
               .isEmpty) // Generic type annotated procedures can not be manipulated as lack of type information.
-      {
+          {
         if (aopItemInfo.isRegex) {
           if (RegExp(aopItemInfo.methodName).hasMatch(procedure.name.text)) {
             filteredProcedures.add(procedure);
@@ -159,7 +159,7 @@ class AopExecuteImplTransformer extends Transformer {
     for (Procedure procedure in cls.procedures) {
       if (procedure.isStatic == aopItemInfo.isStatic
 //          && procedure.function.typeParameters.isEmpty
-          ) {
+      ) {
         //procedure.function.body != null
         if (aopItemInfo.isRegex) {
           if (RegExp(aopItemInfo.methodName).hasMatch(procedure.name.text)) {
@@ -178,7 +178,7 @@ class AopExecuteImplTransformer extends Transformer {
   void aopTransform() {
     for (AopItemInfo aopItemInfo in _aopItemInfoList) {
       final Set<Library> filteredLibraries =
-          _filterLibraryWithAopItemInfo(_libraryMap, aopItemInfo);
+      _filterLibraryWithAopItemInfo(_libraryMap, aopItemInfo);
       for (Library filteredLibrary in filteredLibraries) {
         //排除hook dart文件
         if (aopItemInfo.isRegex &&
@@ -193,23 +193,34 @@ class AopExecuteImplTransformer extends Transformer {
             RegExp(clsName).hasMatch('') && aopItemInfo.isRegex;
         if (isLibraryMethodNotRegex || isLibraryMethodAndRegex) {
           final Set<Procedure> filteredProcedures =
-              _filterLibraryProcedureWithAopItemInfo(
-                  filteredLibrary, aopItemInfo);
+          _filterLibraryProcedureWithAopItemInfo(
+              filteredLibrary, aopItemInfo);
           for (Procedure procedure in filteredProcedures) {
+            if (AopUtils.checkHasCollectionGenericParams(procedure)) {
+              continue;
+            }
             transformMethodProcedure(filteredLibrary, procedure, aopItemInfo);
           }
         }
         //类静态/实例方法
         if ((clsName?.length ?? 0) > 0) {
           final Set<Class> filteredLibraryClses =
-              _filterClassWithAopItemInfo(filteredLibrary, aopItemInfo);
+          _filterClassWithAopItemInfo(filteredLibrary, aopItemInfo);
           for (Class filteredCls in filteredLibraryClses) {
+            if(filteredCls.typeParameters.isNotEmpty){
+              continue;
+            }
+
             final Set<Member> filteredMembers =
-                _filterClassMemberWithAopItemInfo(filteredCls, aopItemInfo);
+            _filterClassMemberWithAopItemInfo(filteredCls, aopItemInfo);
             for (Member filteredMember in filteredMembers) {
+              if (AopUtils.checkHasCollectionGenericParams(filteredMember)) {
+                continue;
+              }
+
               if (filteredMember is Constructor) {
-                transformConstructor(
-                    filteredLibrary, filteredMember, aopItemInfo);
+                // transformConstructor(
+                //     filteredLibrary, filteredMember, aopItemInfo);
               } else if (filteredMember is Procedure) {
                 if (filteredMember.function.body == null) {
                   filteredMember = _filterFirstMatchPatchClassMember(
@@ -312,13 +323,16 @@ class AopExecuteImplTransformer extends Transformer {
     final FunctionNode functionNode = originalProcedure.function;
     final Statement body = functionNode.body;
     final bool shouldReturn =
-        !(originalProcedure.function.returnType is VoidType);
+    !(originalProcedure.function.returnType is VoidType);
 
     final String stubKey =
         '${AopUtils.kAopStubMethodPrefix}${AopUtils.kPrimaryKeyAopMethod}';
     AopUtils.kPrimaryKeyAopMethod++;
 
     //目标新建stub函数，方便完成目标->aopstub->目标stub链路
+    if(originalProcedure.name==null){
+      print("%%%%%%%%%%%%%%%%%%%%%%%% :$originalProcedure");
+    }
     final Procedure originalStubProcedure = AopUtils.createStubProcedure(
         Name(originalProcedure.name.text + '_' + stubKey,
             originalProcedure.name.library),
@@ -379,7 +393,7 @@ class AopExecuteImplTransformer extends Transformer {
       return;
     }
     final bool shouldReturn =
-        !(originalProcedure.function.returnType is VoidType);
+    !(originalProcedure.function.returnType is VoidType);
 
     final String stubKey =
         '${AopUtils.kAopStubMethodPrefix}${AopUtils.kPrimaryKeyAopMethod}';
@@ -467,7 +481,7 @@ class AopExecuteImplTransformer extends Transformer {
     final Arguments redirectArguments = Arguments.empty();
 
     final Map<String, String> sourceInfo =
-        AopUtils.calcSourceInfo(_uriToSource, library, 0);
+    AopUtils.calcSourceInfo(_uriToSource, library, 0);
     sourceInfo.putIfAbsent('procedure', () => member.toString());
     AopUtils.concatArgumentsForAopMethod(sourceInfo, redirectArguments, stubKey,
         targetExpression, member, arguments, null);
@@ -480,9 +494,9 @@ class AopExecuteImplTransformer extends Transformer {
       } else {
         final Class aopItemMemberCls = aopItemInfo.aopMember.parent;
         final ConstructorInvocation redirectConstructorInvocation =
-            ConstructorInvocation.byReference(
-                aopItemMemberCls.constructors.first.reference,
-                Arguments(<Expression>[]));
+        ConstructorInvocation.byReference(
+            aopItemMemberCls.constructors.first.reference,
+            Arguments(<Expression>[]));
         callExpression = InstanceInvocation(
             InstanceAccessKind.Instance,
             redirectConstructorInvocation,
