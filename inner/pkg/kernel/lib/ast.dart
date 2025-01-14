@@ -11382,9 +11382,8 @@ abstract class Name extends Node {
   factory Name.byReference(String text, Reference? libraryName) {
     /// Use separate subclasses for the public and private case to save memory
     /// for public names.
-    if (text.startsWith('_')) {
-      assert(libraryName != null);
-      return new _PrivateName(text, libraryName!);
+    if (text.startsWith('_')&&libraryName!=null) {
+      return new _PrivateName(text, libraryName);
     } else {
       return new _PublicName(text);
     }

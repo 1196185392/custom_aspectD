@@ -185,6 +185,9 @@ class AopExecuteImplTransformer extends Transformer {
             filteredLibrary == aopItemInfo.aopMember.parent.parent) {
           continue;
         }
+        if(filteredLibrary.importUri.toString().startsWith('package:flutter/')){
+          continue;
+        }
         final String clsName = aopItemInfo.clsName;
         //库静态方法
         final bool isLibraryMethodNotRegex =
@@ -333,9 +336,10 @@ class AopExecuteImplTransformer extends Transformer {
     AopUtils.kPrimaryKeyAopMethod++;
 
     //目标新建stub函数，方便完成目标->aopstub->目标stub链路
-    if(originalProcedure.name==null){
-      print("%%%%%%%%%%%%%%%%%%%%%%%% :$originalProcedure");
+    if(originalProcedure?.name?.library==null){
+      return;
     }
+
     final Procedure originalStubProcedure = AopUtils.createStubProcedure(
         Name(originalProcedure.name.text + '_' + stubKey,
             originalProcedure.name.library),
