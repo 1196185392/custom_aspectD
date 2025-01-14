@@ -185,7 +185,9 @@ class AopExecuteImplTransformer extends Transformer {
             filteredLibrary == aopItemInfo.aopMember.parent.parent) {
           continue;
         }
-        if(!filteredLibrary.importUri.toString().startsWith('package:flutter/')){
+        if(!filteredLibrary.importUri.toString().toLowerCase().startsWith('package:ys_')
+        && !filteredLibrary.importUri.toString().toLowerCase().startsWith('package:ez_')
+        && !filteredLibrary.importUri.toString().toLowerCase().startsWith('package:ezviz_')){
           continue;
         }
         final String clsName = aopItemInfo.clsName;
