@@ -81,7 +81,7 @@ class AopExecuteImplTransformer extends Transformer {
           for (Member member in mightPatchCls.members) {
             //Here, the patch member's body must be non-empty.
             if (member.name.text == expectMember.name.text &&
-                member.function.body != null) {
+                member.function?.body != null) {
               return member;
             }
           }
