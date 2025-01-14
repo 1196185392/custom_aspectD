@@ -222,6 +222,9 @@ class AopExecuteImplTransformer extends Transformer {
                 // transformConstructor(
                 //     filteredLibrary, filteredMember, aopItemInfo);
               } else if (filteredMember is Procedure) {
+                if (AopUtils.checkHasCollectionGenericParams(filteredMember)) {
+                  continue;
+                }
                 if (filteredMember.function.body == null) {
                   filteredMember = _filterFirstMatchPatchClassMember(
                       _libraryMap, filteredMember, aopItemInfo);
