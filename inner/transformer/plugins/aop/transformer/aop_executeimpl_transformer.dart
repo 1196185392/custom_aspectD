@@ -228,7 +228,7 @@ class AopExecuteImplTransformer extends Transformer {
                 if (AopUtils.checkHasCollectionGenericParams(filteredMember)) {
                   continue;
                 }
-                if (filteredMember.function.body == null) {
+                if (filteredMember.function?.body == null) {
                   filteredMember = _filterFirstMatchPatchClassMember(
                       _libraryMap, filteredMember, aopItemInfo);
                 }
