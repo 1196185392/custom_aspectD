@@ -188,6 +188,8 @@ class AopExecuteImplTransformer extends Transformer {
         if(!filteredLibrary.importUri.toString().toLowerCase().startsWith('package:ys_')
         && !filteredLibrary.importUri.toString().toLowerCase().startsWith('package:ez_')
         && !filteredLibrary.importUri.toString().toLowerCase().startsWith('package:ezviz_')){
+
+          print("FFFFFF :${filteredLibrary.importUri.toString()}");
           continue;
         }
         final String clsName = aopItemInfo.clsName;
