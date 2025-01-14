@@ -46,7 +46,7 @@ class _FlutterFrontendCompiler implements frontend.CompilerInterface {
   @override
   Future<bool> compile(String filename, ArgResults options,
       {IncrementalCompiler generator}) async {
-    print('aop: need perform 4444444' + aopTransform.toString());
+    print('aop: need perform 55555555' + aopTransform.toString());
 
     if (aopTransform == true &&
         !FlutterTarget.flutterProgramTransformers

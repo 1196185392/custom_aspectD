@@ -165,7 +165,7 @@ class AopUtils {
 
   static bool checkIfReplaceThisUsage(Source source, Statement statement) {
     final int lineNum =
-    AopUtils.getLineNumBySourceAndOffset(source, statement.fileOffset);
+        AopUtils.getLineNumBySourceAndOffset(source, statement.fileOffset);
     if (lineNum == -1) {
       return null;
     }
@@ -373,7 +373,7 @@ class AopUtils {
                   instanceConstant.fieldValues;
 
               final List<MapLiteralEntry> annotationParams =
-              <MapLiteralEntry>[];
+                  <MapLiteralEntry>[];
 
               vals.forEach((Reference ref, Constant val) {
                 final ConstantExpression exp = ConstantExpression(val);
@@ -401,8 +401,8 @@ class AopUtils {
 
     final Class pointCutProceedProcedureCls = pointCutProceedProcedure.parent;
     final ConstructorInvocation pointCutConstructorInvocation =
-    ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
-        pointCutConstructorArguments);
+        ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
+            pointCutConstructorArguments);
     redirectArguments.positional.add(pointCutConstructorInvocation);
   }
 
@@ -491,7 +491,7 @@ class AopUtils {
                   instanceConstant.fieldValues;
 
               final List<MapLiteralEntry> annotationParams =
-              <MapLiteralEntry>[];
+                  <MapLiteralEntry>[];
 
               vals.forEach((Reference ref, Constant val) {
                 final ConstantExpression exp = ConstantExpression(val);
@@ -519,8 +519,8 @@ class AopUtils {
 
     final Class pointCutProceedProcedureCls = pointCutProceedProcedure.parent;
     final ConstructorInvocation pointCutConstructorInvocation =
-    ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
-        pointCutConstructorArguments);
+        ConstructorInvocation(pointCutProceedProcedureCls.constructors.first,
+            pointCutConstructorArguments);
     redirectArguments.positional.add(pointCutConstructorInvocation);
   }
 
@@ -545,7 +545,7 @@ class AopUtils {
     }
 
     for (VariableDeclaration variableDeclaration
-    in member.function.positionalParameters) {
+        in member.function.positionalParameters) {
       final Arguments getArguments = Arguments.empty();
       getArguments.positional.add(IntLiteral(i));
 
@@ -567,7 +567,7 @@ class AopUtils {
     final List<NamedExpression> namedEntries = <NamedExpression>[];
 
     for (VariableDeclaration variableDeclaration
-    in member.function.namedParameters) {
+        in member.function.namedParameters) {
       final Arguments getArguments = Arguments.empty();
       getArguments.positional.add(StringLiteral(variableDeclaration.name));
 
@@ -736,7 +736,7 @@ class AopUtils {
     }
     sourceInfo.putIfAbsent(
         'importUri',
-            () => (library.importUri.toString() != null)
+        () => (library.importUri.toString() != null)
             ? (library.importUri.toString())
             : '');
     sourceInfo.putIfAbsent('library', () => importUri);
@@ -789,7 +789,7 @@ class AopUtils {
         positionalParameters: referConstructor.function.positionalParameters,
         namedParameters: referConstructor.function.namedParameters,
         requiredParameterCount:
-        referConstructor.function.requiredParameterCount,
+            referConstructor.function.requiredParameterCount,
         returnType: shouldReturn
             ? deepCopyASTNode(referConstructor.function.returnType)
             : const VoidType(),
@@ -859,7 +859,7 @@ class AopUtils {
     final List<T> newNodes = <T>[];
     for (T node in nodes) {
       final dynamic newNode =
-      deepCopyASTNode(node, ignoreGenerics: ignoreGeneric);
+          deepCopyASTNode(node, ignoreGenerics: ignoreGeneric);
       if (newNode != null) {
         newNodes.add(newNode);
       }
@@ -871,11 +871,11 @@ class AopUtils {
     final List<Expression> positional = <Expression>[];
     final List<NamedExpression> named = <NamedExpression>[];
     for (VariableDeclaration variableDeclaration
-    in functionNode.positionalParameters) {
+        in functionNode.positionalParameters) {
       positional.add(VariableGet(variableDeclaration));
     }
     for (VariableDeclaration variableDeclaration
-    in functionNode.namedParameters) {
+        in functionNode.namedParameters) {
       named.add(NamedExpression(
           variableDeclaration.name, VariableGet(variableDeclaration)));
     }
@@ -978,8 +978,11 @@ class AopUtils {
         return true;
       }
       var p = node.parent;
-      if (p != null && p is Class && p.typeParameters.isNotEmpty) {
-        return true;
+      while (p != null) {
+        if (p is Class && p.typeParameters.isNotEmpty) {
+          return true;
+        }
+        p = p.parent;
       }
     }
 
